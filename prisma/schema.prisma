@@ -1,0 +1,22 @@
+// Esquema de datos de la API. Identificadores en inglés; comentarios en español.
+// La URL de conexión vive en ../prisma.config.ts (Prisma 7 no la acepta aquí).
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../src/generated/prisma"
+  moduleFormat = "esm"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+/// Profesional del panel privado. Su slug es el identificador de su página pública.
+model Professional {
+  id           String @id @default(uuid())
+  name         String
+  email        String @unique
+  passwordHash String
+  slug         String @unique
+  timezone     String @default("America/Santiago")
+}

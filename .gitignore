@@ -1,0 +1,63 @@
+# salida compilada
+/dist
+/node_modules
+/build
+
+# cliente de Prisma generado (pnpm install lo regenera)
+/src/generated
+
+# caché de build de TypeScript
+*.tsbuildinfo
+
+# registros (logs)
+logs
+*.log
+npm-debug.log*
+pnpm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+lerna-debug.log*
+
+# sistema operativo
+.DS_Store
+
+# pruebas
+/coverage
+/.nyc_output
+
+# IDEs y editores
+/.idea
+.project
+.classpath
+.c9/
+*.launch
+.settings/
+*.sublime-workspace
+
+# IDE - VSCode
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# archivos de variables de entorno (dotenv)
+.env
+.env.test
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# directorios temporales
+.temp
+.tmp
+
+# datos de ejecución
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# reportes de diagnóstico (https://nodejs.org/api/report.html)
+report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json

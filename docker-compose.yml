@@ -1,0 +1,24 @@
+# Postgres local para desarrollo y tests. La API se corre fuera del contenedor (pnpm start:dev).
+# Las credenciales salen de .env, que Docker Compose lee solo (ver .env.example).
+services:
+  db:
+    image: postgres:17-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${DB_USER:?Falta DB_USER en .env}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?Falta DB_PASSWORD en .env}
+      POSTGRES_DB: ${DB_NAME:?Falta DB_NAME en .env}
+    ports:
+      # 5434 por defecto: 5432 y 5433 suelen estar ocupados por otros Postgres locales.
+      - "${DB_PORT:-5434}:5432"
+    volumes:
+      - generic_scheduling_db:/var/lib/postgresql/data
+      - ./docker/postgres-init:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  generic_scheduling_db:
