@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import type { FastifyReply } from 'fastify';
-import { env } from '../config/env.js';
+import { env } from '../../config/env.js';
 import { AuthService } from './auth.service.js';
 import { CurrentProfessionalId } from './current-professional-id.decorator.js';
 import { LoginDto } from './dto/login.dto.js';

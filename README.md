@@ -133,22 +133,29 @@ Los tests e2e necesitan la base de datos levantada (paso 2).
 ## Estructura
 
 ```
-prisma/             esquema y migraciones de la base de datos
+prisma/                 esquema y migraciones de la base de datos
 src/
-  auth/             sesión del profesional: login, guard y decorador del professionalId
-  config/           variables de entorno validadas con zod
-  prisma/           PrismaService y su módulo
-  professionals/    registro de profesionales (controlador, servicio y módulo)
-    dto/            DTOs de entrada validados con class-validator
-  app.module.ts     módulo raíz
-  configure-app.ts  plugins de Fastify (cookies), compartidos por main.ts y los tests
-  main.ts           arranque con Fastify
-test/               tests e2e y create-test-app.ts
-docker/             script que crea la base de tests
-docker-compose.yml  PostgreSQL local
+  config/               variables de entorno validadas con zod
+  db/                   acceso a la base de datos
+    generated/          cliente de Prisma generado (ignorado por git)
+    prisma/             PrismaService y su módulo
+  features/             características de la API, una carpeta por módulo de Nest
+    auth/               sesión del profesional: login, guard y decorador del professionalId
+    professionals/      registro de profesionales y su perfil público
+    services/           servicios del profesional
+    weekly-template/    plantilla semanal: rangos de atención por día
+    */dto/              DTOs de entrada validados con class-validator
+  utils/                funciones puras, sin Nest ni base de datos
+    slots/              inicios de un servicio dentro de los rangos de un día
+  app.module.ts         módulo raíz
+  configure-app.ts      plugins de Fastify (cookies), compartidos por main.ts y los tests
+  main.ts               arranque con Fastify
+test/                   tests e2e y create-test-app.ts
+docker/                 script que crea la base de tests
+docker-compose.yml      PostgreSQL local
 ```
 
-`src/generated/` contiene el cliente de Prisma. Se regenera con `pnpm install` y no se edita a mano.
+`src/db/generated/` contiene el cliente de Prisma. Se regenera con `pnpm install` o `pnpm exec prisma generate`, y no se edita a mano.
 
 ## Notas
 

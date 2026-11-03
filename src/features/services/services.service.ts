@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { PrismaService } from '../prisma/prisma.service.js';
+import { PrismaService } from '../../db/prisma/prisma.service.js';
 import type { CreateServiceDto } from './dto/create-service.dto.js';
 
 const serviceFields = {

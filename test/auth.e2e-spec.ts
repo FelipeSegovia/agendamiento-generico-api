@@ -1,7 +1,7 @@
 import { JwtService } from '@nestjs/jwt';
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import request from 'supertest';
-import { PrismaService } from '../src/prisma/prisma.service.js';
+import { PrismaService } from '../src/db/prisma/prisma.service.js';
 import { createTestApp } from './create-test-app.js';
 
 // H1.2 — Iniciar y cerrar sesión

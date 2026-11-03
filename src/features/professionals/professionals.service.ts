@@ -4,8 +4,8 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import * as argon2 from 'argon2';
-import { Prisma } from '../generated/prisma/client.js';
-import { PrismaService } from '../prisma/prisma.service.js';
+import { Prisma } from '../../db/generated/prisma/client.js';
+import { PrismaService } from '../../db/prisma/prisma.service.js';
 import type { RegisterProfessionalDto } from './dto/register-professional.dto.js';
 
 @Injectable()

@@ -4,7 +4,7 @@
 /build
 
 # cliente de Prisma generado (pnpm install lo regenera)
-/src/generated
+/src/db/generated
 
 # caché de build de TypeScript
 *.tsbuildinfo

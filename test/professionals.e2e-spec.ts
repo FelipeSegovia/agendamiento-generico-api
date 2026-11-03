@@ -1,7 +1,7 @@
 import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import * as argon2 from 'argon2';
 import request from 'supertest';
-import { PrismaService } from '../src/prisma/prisma.service.js';
+import { PrismaService } from '../src/db/prisma/prisma.service.js';
 import { createTestApp } from './create-test-app.js';
 
 // H1.1 — Registrarme como profesional
