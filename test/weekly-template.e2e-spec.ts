@@ -2,6 +2,7 @@ import type { NestFastifyApplication } from '@nestjs/platform-fastify';
 import request from 'supertest';
 import { PrismaService } from '../src/db/prisma/prisma.service.js';
 import { createTestApp } from './create-test-app.js';
+import { ana, bruno, registerAndLogin } from './professional-session.js';
 
 // H1.4 — Definir mi horario semanal
 describe('Plantilla semanal del profesional (e2e)', () => {
@@ -9,34 +10,6 @@ describe('Plantilla semanal del profesional (e2e)', () => {
   let prisma: PrismaService;
   let anaCookie: string;
   let brunoCookie: string;
-
-  const ana = {
-    name: 'Ana Pérez',
-    email: 'ana@ejemplo.cl',
-    password: 'clave-segura',
-    slug: 'ana-perez',
-  };
-  const bruno = {
-    name: 'Bruno Díaz',
-    email: 'bruno@ejemplo.cl',
-    password: 'clave-segura',
-    slug: 'bruno-diaz',
-  };
-
-  // Registra al profesional y devuelve su cookie de sesión lista para el header Cookie.
-  const registerAndLogin = async (professional: typeof ana) => {
-    await request(app.getHttpServer())
-      .post('/api/professionals')
-      .send(professional)
-      .expect(201);
-    const response = await request(app.getHttpServer())
-      .post('/api/auth/login')
-      .send({ email: professional.email, password: professional.password })
-      .expect(204);
-    // Supertest tipa el header como string, pero Set-Cookie llega como lista.
-    const setCookieHeaders: string[] = response.get('Set-Cookie') ?? [];
-    return setCookieHeaders[0].split(';')[0];
-  };
 
   const putTemplate = (cookie: string, body: object) =>
     request(app.getHttpServer())
@@ -61,8 +34,8 @@ describe('Plantilla semanal del profesional (e2e)', () => {
   beforeEach(async () => {
     // Borrar a los profesionales borra sus rangos en cascada.
     await prisma.professional.deleteMany();
-    anaCookie = await registerAndLogin(ana);
-    brunoCookie = await registerAndLogin(bruno);
+    anaCookie = await registerAndLogin(app, ana);
+    brunoCookie = await registerAndLogin(app, bruno);
   });
 
   afterAll(async () => {

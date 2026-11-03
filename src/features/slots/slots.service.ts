@@ -7,11 +7,12 @@ import type { SlotsQueryDto } from './dto/slots-query.dto.js';
 export class SlotsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // Solo horas libres y la zona del profesional: la superficie pública no expone nada más (I2).
-  async findSlotsWeek(slug: string, { serviceId, from }: SlotsQueryDto) {
+  // Todo lo que define los cupos de un servicio: plantilla, duración, zona y citas activas.
+  async loadSchedule(slug: string, serviceId: string, now: Date) {
     const professional = await this.prisma.professional.findUnique({
       where: { slug },
       select: {
+        id: true,
         timezone: true,
         // Un servicio de otro profesional o inactivo no se encuentra.
         services: {
@@ -22,6 +23,13 @@ export class SlotsService {
           select: { weekday: true, startTime: true, endTime: true },
           orderBy: { startTime: 'asc' },
         },
+        appointments: {
+          where: {
+            status: { in: ['pending', 'confirmed'] },
+            endsAt: { gt: now },
+          },
+          select: { startsAt: true, endsAt: true },
+        },
       },
     });
     if (!professional) {
@@ -31,14 +39,28 @@ export class SlotsService {
     if (!service) {
       throw new NotFoundException('No encontramos este servicio.');
     }
-
     return {
+      professionalId: professional.id,
       timezone: professional.timezone,
+      durationMinutes: service.durationMinutes,
+      ranges: professional.weeklyTemplateRanges,
+      busyIntervals: professional.appointments,
+    };
+  }
+
+  // Solo horas libres y la zona del profesional: la superficie pública no expone nada más (I2).
+  async findSlotsWeek(slug: string, { serviceId, from }: SlotsQueryDto) {
+    const now = new Date();
+    const { timezone, durationMinutes, ranges, busyIntervals } =
+      await this.loadSchedule(slug, serviceId, now);
+    return {
+      timezone,
       ...slotsWeek({
-        ranges: professional.weeklyTemplateRanges,
-        durationMinutes: service.durationMinutes,
-        timezone: professional.timezone,
-        now: new Date(),
+        ranges,
+        busyIntervals,
+        durationMinutes,
+        timezone,
+        now,
         from,
       }),
     };

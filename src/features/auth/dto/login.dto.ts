@@ -1,9 +1,6 @@
-import { Transform, type TransformFnParams } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import { IsEmail, IsNotEmpty, IsString, MaxLength } from 'class-validator';
-
-// Si el valor no es texto, se deja tal cual para que lo rechace la validación.
-const normalizeEmail = ({ value }: TransformFnParams) =>
-  typeof value === 'string' ? value.trim().toLowerCase() : value;
+import { normalizeEmail } from '../../../utils/dto-transforms.js';
 
 export class LoginDto {
   @Transform(normalizeEmail)

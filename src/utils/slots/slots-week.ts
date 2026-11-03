@@ -1,8 +1,16 @@
 import { TZDate } from '@date-fns/tz';
-import { addDays, addHours, addWeeks, format, getDay } from 'date-fns';
+import {
+  addDays,
+  addHours,
+  addMinutes,
+  addWeeks,
+  format,
+  getDay,
+} from 'date-fns';
 import { slotStartTimes } from './slot-start-times.js';
 
 type WeekdayRange = { weekday: number; startTime: string; endTime: string };
+type BusyInterval = { startsAt: Date; endsAt: Date };
 
 export type SlotsWeek = {
   from: string;
@@ -25,15 +33,18 @@ const startOfDayIn = (date: string, timezone: string) => {
 const toDateString = (date: Date) => format(date, 'yyyy-MM-dd');
 
 // Cupos de un servicio en los 7 días desde `from`, en la zona del profesional. Solo se
-// ofrecen inicios entre la antelación mínima y el horizonte; `from` nunca es antes de hoy.
+// ofrecen inicios entre la antelación mínima y el horizonte que no se solapan con un
+// intervalo ocupado (citas activas); `from` nunca es antes de hoy.
 export function slotsWeek({
   ranges,
+  busyIntervals,
   durationMinutes,
   timezone,
   now,
   from,
 }: {
   ranges: WeekdayRange[];
+  busyIntervals: BusyInterval[];
   durationMinutes: number;
   timezone: string;
   now: Date;
@@ -65,10 +76,17 @@ export function slotsWeek({
           );
           return { startsAt, time };
         })
-        .filter(
-          ({ startsAt }) =>
-            startsAt >= earliestStart && startsAt <= latestStart,
-        )
+        .filter(({ startsAt }) => {
+          const endsAt = addMinutes(startsAt, durationMinutes);
+          return (
+            startsAt >= earliestStart &&
+            startsAt <= latestStart &&
+            // Intervalos semiabiertos: una cita que termina a las 10:00 no choca con un cupo de las 10:00.
+            !busyIntervals.some(
+              (busy) => startsAt < busy.endsAt && endsAt > busy.startsAt,
+            )
+          );
+        })
         .map(({ startsAt, time }) => ({
           startsAt: new Date(startsAt.getTime()).toISOString(),
           time,

@@ -21,16 +21,19 @@ model Professional {
   timezone             String                @default("America/Santiago")
   services             Service[]
   weeklyTemplateRanges WeeklyTemplateRange[]
+  clients              Client[]
+  appointments         Appointment[]
 }
 
 /// Tipo de cita que ofrece un profesional. La página pública solo muestra los activos.
 model Service {
-  id              String       @id @default(uuid())
+  id              String        @id @default(uuid())
   professionalId  String
-  professional    Professional @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  professional    Professional  @relation(fields: [professionalId], references: [id], onDelete: Cascade)
   name            String
   durationMinutes Int
-  isActive        Boolean      @default(true)
+  isActive        Boolean       @default(true)
+  appointments    Appointment[]
 
   @@index([professionalId])
 }
@@ -47,4 +50,43 @@ model WeeklyTemplateRange {
   endTime        String
 
   @@index([professionalId])
+}
+
+/// Ficha de un cliente, propia de cada profesional. El correo la identifica dentro del profesional.
+model Client {
+  id             String        @id @default(uuid())
+  professionalId String
+  professional   Professional  @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  name           String
+  email          String
+  phone          String
+  appointments   Appointment[]
+
+  @@unique([professionalId, email])
+}
+
+/// pendiente, confirmada, no confirmada y cancelada. Las dos últimas liberan el horario.
+enum AppointmentStatus {
+  pending
+  confirmed
+  notConfirmed
+  cancelled
+}
+
+/// Cita reservada. La migración agrega a mano una restricción EXCLUDE: dos citas activas
+/// del mismo profesional nunca se solapan (Prisma no sabe expresarla).
+model Appointment {
+  id             String            @id @default(uuid())
+  professionalId String
+  professional   Professional      @relation(fields: [professionalId], references: [id], onDelete: Cascade)
+  clientId       String
+  client         Client            @relation(fields: [clientId], references: [id], onDelete: Cascade)
+  serviceId      String
+  service        Service           @relation(fields: [serviceId], references: [id])
+  startsAt       DateTime          @db.Timestamptz(3)
+  endsAt         DateTime          @db.Timestamptz(3)
+  status         AppointmentStatus
+  createdAt      DateTime          @default(now()) @db.Timestamptz(3)
+
+  @@index([professionalId, startsAt])
 }

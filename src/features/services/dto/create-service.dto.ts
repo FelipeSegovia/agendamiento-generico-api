@@ -1,4 +1,4 @@
-import { Transform, type TransformFnParams } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsInt,
   IsNotEmpty,
@@ -7,10 +7,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-
-// Si el valor no es texto, se deja tal cual para que lo rechace la validación.
-const trimText = ({ value }: TransformFnParams) =>
-  typeof value === 'string' ? value.trim() : value;
+import { trimText } from '../../../utils/dto-transforms.js';
 
 const DURATION_MESSAGE =
   'La duración debe ser un número entero de minutos mayor que cero.';

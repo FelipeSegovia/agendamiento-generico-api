@@ -1,4 +1,4 @@
-import { Transform, type TransformFnParams } from 'class-transformer';
+import { Transform } from 'class-transformer';
 import {
   IsEmail,
   IsNotEmpty,
@@ -7,13 +7,7 @@ import {
   MaxLength,
   MinLength,
 } from 'class-validator';
-
-// Si el valor no es texto, se deja tal cual para que lo rechace la validación.
-const trimText = ({ value }: TransformFnParams) =>
-  typeof value === 'string' ? value.trim() : value;
-
-const normalizeEmail = ({ value }: TransformFnParams) =>
-  typeof value === 'string' ? value.trim().toLowerCase() : value;
+import { normalizeEmail, trimText } from '../../../utils/dto-transforms.js';
 
 // Los mensajes llegan tal cual a la persona usuaria: usan el lenguaje del formulario,
 // nunca repiten el valor recibido ni nombres internos. Los largos máximos evitan abusos.

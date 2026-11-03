@@ -10,6 +10,7 @@ describe('slotsWeek', () => {
   it('no muestra los cupos de hoy que ya empezaron', () => {
     const week = slotsWeek({
       ranges: mondayMorning,
+      busyIntervals: [],
       durationMinutes: 60,
       timezone,
       now: mondayAt('10:30'),
@@ -23,6 +24,7 @@ describe('slotsWeek', () => {
 
   it('calcula las horas en la zona del profesional y agrupa los cupos por día', () => {
     const week = slotsWeek({
+      busyIntervals: [],
       ranges: [
         ...mondayMorning,
         { weekday: 3, startTime: '15:00', endTime: '17:00' },
@@ -55,6 +57,7 @@ describe('slotsWeek', () => {
     // Domingo 1 a las 22:00 en Santiago, lunes 2 a la 01:00 en UTC.
     const week = slotsWeek({
       ranges: mondayMorning,
+      busyIntervals: [],
       durationMinutes: 60,
       timezone,
       now: new Date('2026-11-02T01:00:00Z'),
@@ -68,6 +71,7 @@ describe('slotsWeek', () => {
     for (const from of [undefined, '2026-10-01']) {
       const week = slotsWeek({
         ranges: mondayMorning,
+        busyIntervals: [],
         durationMinutes: 60,
         timezone,
         now: mondayAt('08:00'),
@@ -82,6 +86,7 @@ describe('slotsWeek', () => {
   it('la semana anterior nunca empieza antes de hoy', () => {
     const week = slotsWeek({
       ranges: mondayMorning,
+      busyIntervals: [],
       durationMinutes: 60,
       timezone,
       now: mondayAt('08:00'),
@@ -94,6 +99,7 @@ describe('slotsWeek', () => {
   it('no ofrece cupos más allá del horizonte de 8 semanas ni semana siguiente', () => {
     const week = slotsWeek({
       ranges: mondayMorning,
+      busyIntervals: [],
       durationMinutes: 60,
       timezone,
       now: mondayAt('10:00'),
@@ -111,5 +117,38 @@ describe('slotsWeek', () => {
       },
     ]);
     expect(week.nextFrom).toBeNull();
+  });
+
+  // H1.6 — Reservar un cupo
+  it('no ofrece los cupos que se solapan con una cita activa', () => {
+    const week = slotsWeek({
+      ranges: mondayMorning,
+      // Una cita de 10:30 a 11:30 tapa los cupos de las 10:00 y de las 11:00.
+      busyIntervals: [
+        { startsAt: mondayAt('10:30'), endsAt: mondayAt('11:30') },
+      ],
+      durationMinutes: 60,
+      timezone,
+      now: mondayAt('08:00'),
+    });
+
+    expect(week.days[0].slots.map(({ time }) => time)).toEqual(['09:00']);
+  });
+
+  it('ofrece un cupo que empieza justo cuando termina una cita', () => {
+    const week = slotsWeek({
+      ranges: mondayMorning,
+      busyIntervals: [
+        { startsAt: mondayAt('09:00'), endsAt: mondayAt('10:00') },
+      ],
+      durationMinutes: 60,
+      timezone,
+      now: mondayAt('08:00'),
+    });
+
+    expect(week.days[0].slots.map(({ time }) => time)).toEqual([
+      '10:00',
+      '11:00',
+    ]);
   });
 });

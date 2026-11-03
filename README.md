@@ -140,6 +140,7 @@ src/
     generated/          cliente de Prisma generado (ignorado por git)
     prisma/             PrismaService y su módulo
   features/             características de la API, una carpeta por módulo de Nest
+    appointments/       reserva pública de un cupo y citas del panel
     auth/               sesión del profesional: login, guard y decorador del professionalId
     professionals/      registro de profesionales y su perfil público
     services/           servicios del profesional
@@ -147,11 +148,12 @@ src/
     weekly-template/    plantilla semanal: rangos de atención por día
     */dto/              DTOs de entrada validados con class-validator
   utils/                funciones puras, sin Nest ni base de datos
+    dto-transforms.ts   transformaciones de texto para los DTO (trim, correo en minúsculas)
     slots/              cálculo de cupos: inicios en los rangos de un día y semana en la zona del profesional
   app.module.ts         módulo raíz
   configure-app.ts      plugins de Fastify (cookies), compartidos por main.ts y los tests
   main.ts               arranque con Fastify
-test/                   tests e2e y create-test-app.ts
+test/                   tests e2e, create-test-app.ts y professional-session.ts (sesión de Ana y Bruno)
 docker/                 script que crea la base de tests
 docker-compose.yml      PostgreSQL local
 ```
