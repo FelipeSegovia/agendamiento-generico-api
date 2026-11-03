@@ -14,5 +14,7 @@ import { SESSION_DURATION_SECONDS } from './session.js';
   ],
   controllers: [AuthController],
   providers: [AuthService],
+  // Lo usan los módulos del panel para ProfessionalSessionGuard.
+  exports: [JwtModule],
 })
 export class AuthModule {}

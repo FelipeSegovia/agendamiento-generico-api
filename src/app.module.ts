@@ -3,9 +3,10 @@ import { APP_PIPE } from '@nestjs/core';
 import { AuthModule } from './auth/auth.module.js';
 import { PrismaModule } from './prisma/prisma.module.js';
 import { ProfessionalsModule } from './professionals/professionals.module.js';
+import { ServicesModule } from './services/services.module.js';
 
 @Module({
-  imports: [PrismaModule, ProfessionalsModule, AuthModule],
+  imports: [PrismaModule, ProfessionalsModule, AuthModule, ServicesModule],
   providers: [
     // Global vía APP_PIPE (y no en main.ts) para que también aplique en los tests e2e.
     {

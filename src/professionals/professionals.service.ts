@@ -1,4 +1,8 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import {
+  ConflictException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import * as argon2 from 'argon2';
 import { Prisma } from '../generated/prisma/client.js';
 import { PrismaService } from '../prisma/prisma.service.js';
@@ -50,5 +54,25 @@ export class ProfessionalsService {
       }
       throw error;
     }
+  }
+
+  // Solo el perfil y los servicios activos: la superficie pública no expone nada más (I2).
+  async findPublicProfile(slug: string) {
+    const professional = await this.prisma.professional.findUnique({
+      where: { slug },
+      select: {
+        name: true,
+        slug: true,
+        services: {
+          where: { isActive: true },
+          select: { id: true, name: true, durationMinutes: true },
+          orderBy: { name: 'asc' },
+        },
+      },
+    });
+    if (!professional) {
+      throw new NotFoundException('No encontramos esta página.');
+    }
+    return professional;
   }
 }
