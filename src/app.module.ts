@@ -9,6 +9,7 @@ import { PrismaModule } from './db/prisma/prisma.module.js';
 import { AuthModule } from './features/auth/auth.module.js';
 import { ProfessionalsModule } from './features/professionals/professionals.module.js';
 import { ServicesModule } from './features/services/services.module.js';
+import { SlotsModule } from './features/slots/slots.module.js';
 import { WeeklyTemplateModule } from './features/weekly-template/weekly-template.module.js';
 
 // En un DTO anidado (una lista de rangos), el mensaje vive en los hijos del error.
@@ -23,6 +24,7 @@ const firstMessage = (error: ValidationError): string | undefined =>
     AuthModule,
     ServicesModule,
     WeeklyTemplateModule,
+    SlotsModule,
   ],
   providers: [
     // Global vía APP_PIPE (y no en main.ts) para que también aplique en los tests e2e.
