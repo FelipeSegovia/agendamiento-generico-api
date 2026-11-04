@@ -3,6 +3,7 @@ import { ConflictException, Injectable } from '@nestjs/common';
 import { addMinutes, format } from 'date-fns';
 import { Prisma } from '../../db/generated/prisma/client.js';
 import { PrismaService } from '../../db/prisma/prisma.service.js';
+import { initialAppointmentStatus } from '../../utils/initial-appointment-status.js';
 import { slotsWeek } from '../../utils/slots/slots-week.js';
 import { SlotsService } from '../slots/slots.service.js';
 import type { BookAppointmentDto } from './dto/book-appointment.dto.js';
@@ -71,8 +72,11 @@ export class AppointmentsService {
             serviceId,
             startsAt: startDate,
             endsAt: addMinutes(startDate, schedule.durationMinutes),
-            // Atajo de la semilla: toda reserva nace confirmada hasta H2.1.
-            status: 'confirmed',
+            status: initialAppointmentStatus(
+              startDate,
+              schedule.confirmationDeadlineHours,
+              now,
+            ),
           },
           select: {
             startsAt: true,

@@ -10,6 +10,7 @@ import { AppointmentsModule } from './features/appointments/appointments.module.
 import { AuthModule } from './features/auth/auth.module.js';
 import { ProfessionalsModule } from './features/professionals/professionals.module.js';
 import { ServicesModule } from './features/services/services.module.js';
+import { SettingsModule } from './features/settings/settings.module.js';
 import { SlotsModule } from './features/slots/slots.module.js';
 import { WeeklyTemplateModule } from './features/weekly-template/weekly-template.module.js';
 
@@ -27,6 +28,7 @@ const firstMessage = (error: ValidationError): string | undefined =>
     WeeklyTemplateModule,
     SlotsModule,
     AppointmentsModule,
+    SettingsModule,
   ],
   providers: [
     // Global vía APP_PIPE (y no en main.ts) para que también aplique en los tests e2e.

@@ -7,13 +7,14 @@ import type { SlotsQueryDto } from './dto/slots-query.dto.js';
 export class SlotsService {
   constructor(private readonly prisma: PrismaService) {}
 
-  // Todo lo que define los cupos de un servicio: plantilla, duración, zona y citas activas.
+  // Todo lo que define los cupos de un servicio (plantilla, duración, zona y citas activas) y el plazo para reservar.
   async loadSchedule(slug: string, serviceId: string, now: Date) {
     const professional = await this.prisma.professional.findUnique({
       where: { slug },
       select: {
         id: true,
         timezone: true,
+        confirmationDeadlineHours: true,
         // Un servicio de otro profesional o inactivo no se encuentra.
         services: {
           where: { id: serviceId, isActive: true },
@@ -42,6 +43,7 @@ export class SlotsService {
     return {
       professionalId: professional.id,
       timezone: professional.timezone,
+      confirmationDeadlineHours: professional.confirmationDeadlineHours,
       durationMinutes: service.durationMinutes,
       ranges: professional.weeklyTemplateRanges,
       busyIntervals: professional.appointments,

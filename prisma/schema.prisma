@@ -13,16 +13,18 @@ datasource db {
 
 /// Profesional del panel privado. Su slug es el identificador de su página pública.
 model Professional {
-  id                   String                @id @default(uuid())
-  name                 String
-  email                String                @unique
-  passwordHash         String
-  slug                 String                @unique
-  timezone             String                @default("America/Santiago")
-  services             Service[]
-  weeklyTemplateRanges WeeklyTemplateRange[]
-  clients              Client[]
-  appointments         Appointment[]
+  id                        String                @id @default(uuid())
+  name                      String
+  email                     String                @unique
+  passwordHash              String
+  slug                      String                @unique
+  timezone                  String                @default("America/Santiago")
+  /// Horas antes de la cita en que vence el plazo para confirmarla.
+  confirmationDeadlineHours Int                   @default(24)
+  services                  Service[]
+  weeklyTemplateRanges      WeeklyTemplateRange[]
+  clients                   Client[]
+  appointments              Appointment[]
 }
 
 /// Tipo de cita que ofrece un profesional. La página pública solo muestra los activos.

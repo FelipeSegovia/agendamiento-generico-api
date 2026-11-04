@@ -93,7 +93,7 @@ describe('Reserva de un cupo (e2e)', () => {
     await app.close();
   });
 
-  it('reserva el cupo de las 10:00: la cita dura lo que el servicio, nace confirmada y el cupo desaparece', async () => {
+  it('reserva el cupo de las 10:00: la cita dura lo que el servicio, nace pendiente y el cupo desaparece', async () => {
     const startsAt = await slotAt('10:00');
 
     const response = await book({
@@ -106,13 +106,39 @@ describe('Reserva de un cupo (e2e)', () => {
     expect(response.body).toEqual({
       startsAt,
       endsAt: new Date(Date.parse(startsAt) + 60 * 60_000).toISOString(),
-      status: 'confirmed',
+      status: 'pending',
       service: { name: 'Consulta' },
     });
     expect((await getSlots()).map(({ time }) => time)).toEqual([
       '09:00',
       '11:00',
     ]);
+  });
+
+  // H2.1 — Configurar el plazo de confirmación
+  it('las reservas nuevas usan el plazo que fijó el profesional', async () => {
+    await book({
+      serviceId: consultaId,
+      startsAt: await slotAt('09:00'),
+      ...carla,
+    })
+      .expect(201)
+      .expect(({ body }) => expect(body.status).toBe('pending'));
+
+    // Con 10 días de plazo, una cita de la próxima semana ya lo tiene vencido.
+    await request(app.getHttpServer())
+      .put('/api/settings')
+      .set('Cookie', anaCookie)
+      .send({ confirmationDeadlineHours: 240 })
+      .expect(200);
+
+    await book({
+      serviceId: consultaId,
+      startsAt: await slotAt('10:00'),
+      ...carla,
+    })
+      .expect(201)
+      .expect(({ body }) => expect(body.status).toBe('confirmed'));
   });
 
   it('la agenda del panel muestra la cita con su servicio, su hora y el cliente', async () => {
@@ -126,7 +152,7 @@ describe('Reserva de un cupo (e2e)', () => {
         id: expect.any(String),
         startsAt,
         endsAt: new Date(Date.parse(startsAt) + 60 * 60_000).toISOString(),
-        status: 'confirmed',
+        status: 'pending',
         service: { name: 'Consulta' },
         client: carla,
       },

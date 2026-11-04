@@ -144,11 +144,13 @@ src/
     auth/               sesión del profesional: login, guard y decorador del professionalId
     professionals/      registro de profesionales y su perfil público
     services/           servicios del profesional
+    settings/           configuración del profesional: plazo de confirmación
     slots/              cupos libres públicos de un servicio, por semana
     weekly-template/    plantilla semanal: rangos de atención por día
     */dto/              DTOs de entrada validados con class-validator
   utils/                funciones puras, sin Nest ni base de datos
     dto-transforms.ts   transformaciones de texto para los DTO (trim, correo en minúsculas)
+    initial-appointment-status.ts  estado con que nace una cita según el plazo de confirmación
     slots/              cálculo de cupos: inicios en los rangos de un día y semana en la zona del profesional
   app.module.ts         módulo raíz
   configure-app.ts      plugins de Fastify (cookies), compartidos por main.ts y los tests
